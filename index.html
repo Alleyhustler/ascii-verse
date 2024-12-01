@@ -1,0 +1,781 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCII VERSE AI</title>
+	
+	<!--
+	
+	╰( ͡° ͜ʖ ͡° )つ──☆*:・ﾟ
+	
+	this website is made fully by our new AI tool
+	working like 24/7 for 6 months we can release
+	it in the near future. 
+	
+	creating site for anything (even pump.fun 
+	token) was never so easy. stay tuned.
+	
+	$ASCII is the future.
+	
+	╰( ͡° ͜ʖ ͡° )つ──☆*:・ﾟ
+	
+	-->
+	
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <style>
+
+		* {
+			cursor: none !important;
+        }
+
+        body {
+            background: black;
+            color: white;
+            font-family: monospace;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+		
+		 .ascii-cursor {
+            position: absolute;
+            pointer-events: none; 
+            font-size: 18px;
+            font-family: monospace;
+            color: white;
+            z-index: 1000;
+            text-shadow: 
+                -1px -1px 0 black,
+                1px -1px 0 black,
+                -1px 1px 0 black,
+                1px 1px 0 black;
+        }
+		
+		.loading-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-size: 20px;
+        }
+
+        .progress-bar {
+            font-size: 24px;
+            margin: 10px 0;
+        }
+
+        .loading-text {
+            font-size: 16px;
+            color: white;
+        }
+
+        .main-screen {
+            display: none;
+        }
+		
+        header {
+            background: black;
+            border-bottom: 2px solid white;
+            padding: 10px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropbtn {
+            text-decoration: none;
+            color: white;
+            background: none;
+            border: 1px solid white;
+            padding: 8px 20px;
+            margin: 0 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            border-radius: 0;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .dropbtn:hover,
+        .dropbtn:focus {
+            background: white;
+            color: black;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: black;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px rgba(255,255,255,0.2);
+            z-index: 1;
+            border: 1px solid white;
+            border-radius: 0; 
+            margin-top: 5px; 
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dropdown-content a {
+            color: white;
+            padding: 10px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+            font-size: 14px;
+			border: 0px;
+            border-bottom: 1px solid #444; 
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .dropdown-content a:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-content a:hover {
+            background-color: white;
+            color: black;
+        }
+
+        .dropdown.show .dropdown-content {
+            display: block;
+        }
+
+        header a,
+        header button {
+            text-decoration: none;
+            color: white;
+            background: none;
+            border: 1px solid white;
+            padding: 5px 15px;
+            margin: 0 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: center;
+            display: inline-block;
+            width: auto;
+            height: 30px;
+            line-height: 1.2;
+            box-sizing: border-box;
+            border-radius: 0; 
+            transition: background 0.3s, color 0.3s;
+        }
+
+        header a:hover,
+        header button:hover {
+            background: white;
+            color: black;
+        }
+
+        .play-stop-button {
+            width: 50px;
+            font-size: 16px;
+            padding: 0;
+            height: 30px;
+            border-radius: 0;
+        }
+
+        .input-copy-container {
+            display: flex;
+            align-items: center;
+            margin: 10px;
+            position: relative;
+        }
+
+        .token-display {
+            background: black;
+            color: white;
+            border: 1px solid white;
+            padding: 5px;
+            font-size: 14px;
+            width: 350px;
+            text-align: left;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            margin-right: 5px;
+            border-radius: 0;
+        }
+
+        .copy-notification {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: black;
+            color: white;
+            padding: 5px 10px;
+            font-size: 12px;
+            border: 1px solid white;
+            border-radius: 5px;
+            margin-top: 5px;
+            display: none;
+            z-index: 10;
+        }
+
+        .main-screen {
+			user-select: none;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            overflow: hidden;
+            white-space: pre-wrap;
+            line-height: 1.2;
+        }
+
+        .controls {
+			visibility: hidden;
+            margin: 20px 0;
+        }
+
+        .controls button {
+            background: none;
+            color: white;
+            border: 1px solid white;
+            padding: 5px 10px;
+            margin: 0 5px;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 0;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .controls button:hover {
+            background: white;
+            color: black;
+        }
+
+        .ascii-output {
+            margin-top: 10px;
+            font-size: 14px;
+			user-select: none;
+        }
+		
+		.ascii-char {
+			position: absolute;
+			font-family: monospace;
+			color: white;
+			font-size: 16px;
+			pointer-events: none;
+			opacity: 1;
+			transition: transform 1s, opacity 1s;
+		}
+		
+		.wavy-text {
+			position: absolute;
+			top: -7px; 
+			right: -5px;
+			color: yellow;
+			font-weight: bold;
+			font-size: 12px;
+			animation: wave 1.5s infinite;
+			display: inline-block;
+		}
+
+		@keyframes wave {
+			0%, 100% {
+				transform: translateY(0px);
+			}
+			20% {
+				transform: translateY(-3px);
+			}
+			40% {
+				transform: translateY(3px);
+			}
+			60% {
+				transform: translateY(-3px);
+			}
+			80% {
+				transform: translateY(3px);
+			}
+		}
+		
+		.dropdown-content {
+			background-color: black; 
+			border: 1px solid white; 
+			border-radius: 0; 
+		}
+		
+		.mobile-view {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 90vh;
+        }
+
+        .mobile-view p {
+            font-size: 16px;
+            margin-top: 20px;
+        }
+		
+		.mobile-view a {
+			text-decoration: none;
+            color: white;
+            background: none;
+            border: 1px solid white;
+            padding: 5px 15px;
+            margin: 0 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: center;
+			border-radius: 0;
+			transition: background 0.3s, color 0.3s;
+		}
+		
+		.mobile-view a.copy-button-mobile {
+			text-decoration: none;
+            color: white;
+            background: none;
+            border: 1px solid white;
+            padding: 5px 5px;
+            margin: 0 5px;
+            cursor: pointer;
+            font-size: 14px;
+            text-align: center;
+			border-radius: 0; 
+			transition: background 0.3s, color 0.3s;
+		}
+		
+		.mobile-view div.copy-notification-mobile {
+            top: 100%;
+            left: 0;
+            background: black;
+            color: white;
+            padding: 5px 10px;
+            font-size: 12px;
+            border: 1px solid white;
+            border-radius: 5px;
+            margin-top: 5px;
+            display: none;
+        }
+		
+		.mobile-view button {
+            color: white;
+            background: none;
+            border: 1px solid white;
+            padding: 5px 15px;
+            margin: 0 5px;
+			height: 31px;
+			border-radius: 0; 
+			transition: background 0.3s, color 0.3s;
+        }
+		
+		.mobile-view .dropdown-content a {
+            color: white;
+            padding: 10px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+            font-size: 14px;
+			border: 0px;
+            border-bottom: 1px solid #444; 
+            transition: background 0.3s, color 0.3s;
+        }
+		
+        .pc-view {
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+		
+		@media screen and (max-width: 768px) {
+            .pc-view {
+                display: none;
+            }
+
+            .mobile-view {
+                display: flex;
+            }
+
+            .ascii-cursor {
+                display: none;
+            }
+
+            * {
+                cursor: auto; 
+            }
+			
+        }
+
+        .ascii-art {
+    font-size: 16px;
+    line-height: 1.2;
+    color: #ffffff;
+    margin-bottom: 20px;
+    animation: pulse 2s infinite;
+    animation: fade-in-out 2s infinite;
+    animation: glitch 1.5s infinite;
+    animation: fade-in-out 2s infinite;
+    margin-right: 100px;
+    
+    
+    
+
+}
+
+@keyframes glitch {
+    0% {
+        text-shadow: -1px 0 red, 1px 0 cyan;
+    }
+    50% {
+        text-shadow: 2px 0 red, -2px 0 cyan;
+    }
+    100% {
+        text-shadow: -1px 0 red, 1px 0 cyan;
+    }
+}
+
+@keyframes fade-in-out {
+    0%, 100% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+		
+    </style>
+</head>
+<body>
+	<div class="pc-view">
+        <div class="loading-container">
+            <pre class="ascii-art">
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⡿⠟⠛⢻⣛⣛⣻⠿⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣛⣯⣶⣶⣿⣿⣿⣿⣿⣿⣿⣿⣷⣶⣬⣝⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣫⣵⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣮⣛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢟⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣎⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣯⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⠹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢫⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣯⢽⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣛⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣽⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣹⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡍⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣏⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣇⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⡿⣿⣿⣿⣿⣿⣿⣿⡾⣻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣍⣻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢿⢽⣯⣯⣾⢭⡽⣿⣿⣿⣿⣇⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣯⣹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢿⣾⣿⣿⣿⣿⣿⣿⣽⡺⣿⣿⣿⣿⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡍⣿⣿⣿⣿⡿⡯⣻⡿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢾⠹⣿⢻⣿⣷⣿⣹⣗⣿⣷⣿⣿⣿⢹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠽⣿⣿⢱⣿⣷⣿⣾⣿⡫⡻⣿⣿⣿⣿⣿⣿⣞⣻⢿⢿⣟⣿⣻⣿⡦⣷⣿⣿⣿⡿⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣹⣯⢋⣽⣿⣿⣻⣿⣿⣇⠽⣿⣿⣿⣿⣿⣿⣮⣅⢫⠭⠋⣻⣹⣳⣿⣿⣿⣿⣷⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣧⢻⣣⢮⣿⣽⣿⣿⣿⣹⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣿⣿⣿⣿⣿⣿⣿⣹⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡮⡿⣷⣭⡻⠟⠿⣛⢟⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣯⣼⡾⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣮⡻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢷⢿⡷⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣽⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣮⣿⣷⠼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⡝⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣵⣿⣿⣿⣷⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⣿⣿⣿⡿⠿⠿⠿⠝⠛⠿⠿⣿⣿⣿⣯⣿⣿⣿⣿⣿⣿⣦⣝⡿⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡙⣿⣿⣛⣉⣀⡀⠀⢀⣤⣶⣶⣿⣿⣿⣷⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣦⣾⣵⣶⣮⣝⣛⣿⣭⣴
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣯⣮⣽⣿⣿⣿⣿⣯⢸⣿⣿⣿⣿⠋⣽⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣟⣿⣻⣌⡛⢿⠿⢿⣿⡿⠿⣛⣥⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢿⣟⡽⣭⣶⣾⣿⣿⣿⣽⣶⣿⣽⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣻⣟⣻⣼⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣺⣷⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣟⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢛⣹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+            </pre>
+            <div class="loading-text">
+                <span class="dots">ASCII VERSE AUTOMATED...</span>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar"></div>
+            </div>
+        </div>
+        
+        
+		<header>
+			<div>
+				<a href="https://jup.ag/swap/SOL-2ArUYeFpZ7CEReBp9h5DKv53FqqnYmN3zy2rm68Npump" target="_blank">BUY</a>
+				<a href="https://x.com/ascii_solana" target="_blank">X</a>
+				<a href="https://t.me/ascii_solana" target="_blank">TG</a>
+				<div class="dropdown">
+					<button class="dropbtn">FEATURES<span class="wavy-text" style="color: white;">HOT!</span></button>
+					<div class="dropdown-content">
+						<a href="https://ai.asciimeme.xyz">AI</a>
+						<a href="https://chat.asciimeme.xyz">CHAT</a>
+						<a href="https://ipod.asciimeme.xyz">IPOD</a>
+						<a href="https://nai.asciimeme.xyz">CONVERTER</a>
+						<a href="https://bird.asciimeme.xyz">BIRD</a>
+					</div>
+				</div>
+
+			</div>
+			<div class="input-copy-container">
+				<div id="tokenDisplay" class="token-display">CA HERE</div>
+				<button class="copy-button" onclick="copyToken()">COPY</button>
+				<div id="copyNotification" class="copy-notification">copied!</div>
+			</div>
+			<button class="play-stop-button" id="playStopButton" onclick="toggleMusic()">||</button>
+	    </header>
+		<div class="main-screen" id="mainScreen">
+			<pre id="asciiArt" style="color: white;"></pre>
+		</div>
+		<div class="controls" id="controlButtons">
+			<button onclick="changeAnimation(-1)">&lt;-</button>
+			<button onclick="setColor('blue')">blue</button>
+			<button onclick="setColor('green')">green</button>
+			<button onclick="setColor('red')">red</button>
+			<button onclick="changeAnimation(1)">-&gt;</button>
+		</div>
+		<div class="ascii-output" id="asciiOutput"></div>
+		<audio id="backgroundMusic" src="media/love.mp3" loop=""></audio>
+	</div>
+	<div class="mobile-view">
+		<div>
+			<a href="https://jup.ag/swap/SOL-2ArUYeFpZ7CEReBp9h5DKv53FqqnYmN3zy2rm68Npump" target="_blank">BUY</a>
+			<a href="https://x.com/ascii_solana" target="_blank">X</a>
+			<a href="https://t.me/+Z2-ECMTJ4qoxYzM0" target="_blank">TG</a>
+			<div class="dropdown">
+					<button class="dropbtn">FEATURES<span class="wavy-text" style="color: yellow;">HOT!</span></button>
+					<div class="dropdown-content">
+						<a href="https://ai.asciimeme.xyz">AI</a>
+						<a href="https://chat.asciimeme.xyz">CHAT</a>
+						<a href="https://ipod.asciimeme.xyz">IPOD</a>
+						<a href="https://nai.asciimeme.xyz">CONVERTER</a>
+						<a href="https://bird.asciimeme.xyz">BIRD</a>
+					</div>
+				</div>
+			<button class="play-stop-button" id="playStopButtonMobile" onclick="toggleMusic()">||</button>
+		</div>
+		<p></p>
+		<a class="copy-button-mobile" onclick="copyToken()">CA HERE</a>
+		<div id="copyNotificationMobile" class="copy-notification-mobile">copied!</div>
+        <pre>
+		</pre>
+		<p>Use laptop or PC to access full site</p>
+    </div>
+	
+	<script>
+		function toggleDropdown(event) {
+			event.stopPropagation(); 
+			this.parentElement.classList.toggle('show');
+		}
+
+		function closeAllDropdowns(event) {
+			const dropdowns = document.querySelectorAll('.dropdown');
+			dropdowns.forEach(dropdown => {
+				if (!dropdown.contains(event.target)) {
+					dropdown.classList.remove('show');
+				}
+			});
+		}
+
+		const dropButtons = document.querySelectorAll('.dropbtn');
+		dropButtons.forEach(btn => {
+			btn.addEventListener('click', toggleDropdown);
+		});
+
+		window.addEventListener('click', closeAllDropdowns);
+	</script>
+
+
+	
+    <script>
+        let animations = [];
+        let currentAnimationIndex = 0;
+        let currentFrameIndex = 0;
+        let animationInterval;
+		
+		const loadingContainer = document.getElementById("loadingContainer");
+        const progressBar = document.getElementById("progressBar");
+        const mainScreen = document.getElementById("mainScreen");
+		const controls = document.getElementById("controlButtons");
+
+        function updateProgressBar(percentage) {
+			const totalBars = 20;
+			const clampedPercentage = Math.max(0, Math.min(percentage, 100));
+			const filledBars = Math.round((clampedPercentage / 100) * totalBars);
+			const emptyBars = totalBars - filledBars;
+
+			progressBar.textContent = `[${'='.repeat(filledBars)}${'·'.repeat(emptyBars)}]`;
+		}
+		
+		function startProgressBarLoop() {
+			let progress = 0;
+			const interval = 200; 
+
+			return setInterval(() => {
+				progress = (progress + 5) % 105;
+				updateProgressBar(progress);
+			}, interval);
+		}
+
+		
+        function copyToken() {
+            const token = document.getElementById("tokenDisplay").innerText;
+            const notification = document.getElementById("copyNotification");
+			const notificationMobile = document.getElementById("copyNotificationMobile");
+
+            navigator.clipboard.writeText(token).then(() => {
+                notification.style.display = "block";
+				notificationMobile.style.display = "block";
+                setTimeout(() => {
+                    notification.style.display = "none";
+					notificationMobile.style.display = "none";
+                }, 2000);
+            });
+        }
+
+        const music = document.getElementById("backgroundMusic");
+        const playStopButton = document.getElementById("playStopButton");
+		const playStopButtonMobile = document.getElementById("playStopButtonMobile");
+
+        document.addEventListener('click', () => {
+            music.play();
+        }, { once: true });
+
+        function toggleMusic() {
+            if (music.paused) {
+                music.play();
+                playStopButton.textContent = "||";
+				playStopButtonMobile.textContent = "||";
+            } else {
+                music.pause();
+                playStopButton.textContent = "▷";
+				playStopButtonMobile.textContent = "▷";
+            }
+        }
+
+        const progressInterval = startProgressBarLoop();
+
+		fetch('animations.json')
+			.then(response => response.json())
+			.then(data => {
+				animations = data.animations;
+				clearInterval(progressInterval);
+				updateProgressBar(100); 
+				setTimeout(() => {
+					loadingContainer.style.display = "none";
+					mainScreen.style.visibility = "visible";
+					controls.style.visibility = "visible";
+					playAnimation(0);
+				}, 500);
+			})
+			.catch(error => {
+				clearInterval(progressInterval);
+				progressBar.textContent = "Failed to load animations.";
+				console.error("Error loading animations:", error);
+			});
+
+        function setColor(color) {
+            const asciiArt = document.getElementById("asciiArt");
+            asciiArt.style.color = color;
+        }
+
+        function playAnimation(index) {
+            if (animationInterval) clearInterval(animationInterval);
+
+            currentAnimationIndex = index;
+            currentFrameIndex = 0;
+
+            const frames = animations[currentAnimationIndex].frames;
+            const asciiArt = document.getElementById("asciiArt");
+            const asciiOutput = document.getElementById("asciiOutput");
+
+            asciiOutput.innerText = `>>> output ./ascii/${animations[currentAnimationIndex].name}.ascii`;
+
+            animationInterval = setInterval(() => {
+                asciiArt.innerText = frames[currentFrameIndex];
+                currentFrameIndex = (currentFrameIndex + 1) % frames.length;
+            }, 100);
+        }
+
+        function changeAnimation(direction) {
+            const newIndex =
+                (currentAnimationIndex + direction + animations.length) % animations.length;
+            playAnimation(newIndex);
+        }
+		
+		function createAsciiExplosion(event) {
+			const numChars = 10; 
+			const asciiChars = "!@#$%^&*()_+|<>?~"; 
+
+			for (let i = 0; i < numChars; i++) {
+				const char = document.createElement('div');
+				char.className = 'ascii-char';
+				char.textContent = asciiChars[Math.floor(Math.random() * asciiChars.length)];
+
+				char.style.left = `${event.clientX}px`;
+				char.style.top = `${event.clientY}px`;
+
+				const angle = Math.random() * 2 * Math.PI;
+				const distance = Math.random() * 100 + 50;
+				const x = Math.cos(angle) * distance;
+				const y = Math.sin(angle) * distance;
+
+				requestAnimationFrame(() => {
+					char.style.transform = `translate(${x}px, ${y}px) scale(0.5)`;
+					char.style.opacity = 0;
+				});
+
+				document.body.appendChild(char);
+
+				setTimeout(() => {
+					char.remove();
+				}, 1000);
+			}
+		}
+
+		document.body.addEventListener('click', createAsciiExplosion);
+
+    </script>
+	
+	<script>
+        const asciiSymbol = '<$';
+
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+
+        if (!isTouchDevice) {
+            const customCursor = document.createElement('div');
+            customCursor.className = 'ascii-cursor';
+            customCursor.textContent = asciiSymbol;
+            document.body.appendChild(customCursor);
+
+            document.addEventListener('mousemove', (event) => {
+                customCursor.style.left = `${event.pageX}px`;
+                customCursor.style.top = `${event.pageY}px`;
+            });
+
+            document.addEventListener('mouseleave', () => {
+                customCursor.style.display = 'none';
+            });
+
+            document.addEventListener('mouseenter', () => {
+                customCursor.style.display = 'block';
+            });
+        }
+    </script><div class="ascii-cursor">&lt;$</div>
+	
+	<script>
+	const wavyText = document.querySelectorAll('.wavy-text');
+
+	wavyText.forEach(text => {
+		setInterval(() => {
+			const colors = ['yellow', 'lime', 'aqua', 'white'];
+			const randomColor = colors[Math.floor(Math.random() * colors.length)];
+			text.style.color = randomColor;
+		}, 500);
+	});
+
+	</script>
+    
+	
+
+
+</body></html>
