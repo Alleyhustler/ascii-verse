@@ -1,0 +1,954 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCII CHAT</title>
+    
+     <!--
+	
+	 what if this will be our
+	 ASCII 4chan in the future?
+	 
+	 -->
+    
+     <!--
+	 
+	 ───── ─▄▄─▄▄─ ─────────────
+	 █▀▀▀█ ████░░█ █▀█▀█▀▀▀█▀█▀█
+	 ██─██ ▀███░█▀ █▄─▄█─█─█─█─█
+	 █▄▄▄█ ──▀█▀── ██▄██▄▄▄█▄▄▄█
+	 
+	 -->
+	
+	 <!--
+	
+	 gm stranger! wanna some leak? our new project
+	 ascii.fun will be released on [REDACTED]!
+	
+	 -->
+	
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            background: black;
+            color: white;
+            font-family: monospace;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        header {
+            background: black;
+            border-bottom: 2px solid white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        header a {
+            text-decoration: none;
+            color: white;
+            background: none;
+            border: 1px solid white;
+            padding: 5px 15px;
+            margin: 0;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 4px;
+            transition: background 0.3s, color 0.3s;
+        }
+        header a:hover {
+            background: white;
+            color: black;
+        }
+        .container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            flex: 1;
+            padding: 10px;
+            overflow: hidden;
+            width: 100%;
+        }
+        .nickname-container {
+            margin-bottom: 10px;
+            text-align: center;
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .nickname-group {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+        }
+        #current-nickname {
+            font-size: 16px;
+            color: #ff9800;
+            white-space: nowrap;
+        }
+        .nickname-container input {
+            flex: 1;
+            padding: 10px;
+            background: black;
+            border: 1px solid white;
+            color: white;
+            text-align: center;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            display: none;
+            max-width: 200px;
+        }
+        .nickname-container input:focus {
+            outline: none;
+            border-color: #ff4500;
+        }
+        .nickname-container button {
+            padding: 5px 15px;
+            background: none;
+            color: white;
+            border: 1px solid white;
+            cursor: pointer;
+            font-size: 14px;
+            white-space: nowrap;
+            border-radius: 4px;
+            transition: background 0.3s, color 0.3s;
+        }
+        .nickname-container button:hover {
+            background: white;
+            color: black;
+        }
+        #chat-box {
+            border: 1px solid white;
+            background: black;
+            width: 100%;
+            max-width: 800px;
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            position: relative;
+        }
+        #chat-box::-webkit-scrollbar {
+            width: 8px;
+        }
+        #chat-box::-webkit-scrollbar-thumb {
+            background-color: #555;
+            border-radius: 4px;
+        }
+        #chat-box::-webkit-scrollbar-thumb:hover {
+            background-color: #888;
+        }
+        #chat-box::-webkit-scrollbar-track {
+            background-color: black;
+        }
+        #message-form {
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+            width: 100%;
+            max-width: 800px;
+            position: relative;
+            align-items: center;
+        }
+        #message-form .input-container {
+            position: relative;
+            flex: 1;
+            width: 100%;
+        }
+        #message {
+            width: 100%;
+            padding: 10px 50px 10px 10px;
+            color: white;
+            background: black;
+            border: 1px solid white;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        #message:focus {
+            outline: none;
+            border-color: #ff4500;
+        }
+        .message-form-buttons {
+            display: flex;
+            flex-direction: row;
+            gap: 5px;
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .message-form-buttons .icon-button {
+            width: 24px;
+            height: 24px;
+            padding: 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: background 0.3s;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        .message-form-buttons .icon-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        #color-picker-button {
+            background-color: #ffffff;
+            border: 1px solid white;
+            width: 24px;
+            height: 24px;
+        }
+        #ascii-selector-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: background 0.3s;
+            color: white;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        #ascii-selector-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .color-picker-popup {
+            visibility: hidden;
+            display: none;
+            position: absolute;
+            top: -110px;
+            right: 10px;
+            background: #2c2c2c;
+            border: 1px solid #555;
+            padding: 10px;
+            border-radius: 5px;
+            display: grid;
+            grid-template-columns: repeat(3, 30px);
+            grid-gap: 5px;
+            z-index: 1000;
+            max-width: 100%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .color-square {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 2px solid #444;
+            transition: transform 0.2s, border 0.2s;
+        }
+        .color-square:hover {
+            transform: scale(1.1);
+            border: 2px solid #fff;
+        }
+        .ascii-selector-popup {
+            display: none;
+            position: absolute;
+            top: -135px;
+            right: 10px;
+            background: #2c2c2c;
+            border: 1px solid #555;
+            padding: 10px;
+            border-radius: 5px;
+            max-height: 150px;
+            overflow-y: auto;
+            z-index: 1000;
+            width: 250px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .ascii-item {
+            padding: 5px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 16px;
+            white-space: pre-wrap;
+        }
+        .ascii-item:hover {
+            background: #444;
+        }
+        .ascii-selector-popup::-webkit-scrollbar {
+            width: 8px;
+        }
+        .ascii-selector-popup::-webkit-scrollbar-thumb {
+            background-color: #555;
+            border-radius: 4px;
+        }
+        .ascii-selector-popup::-webkit-scrollbar-thumb:hover {
+            background-color: #888;
+        }
+        .ascii-selector-popup::-webkit-scrollbar-track {
+            background-color: #2c2c2c;
+        }
+        .color-picker-popup::-webkit-scrollbar {
+            width: 8px;
+        }
+        .color-picker-popup::-webkit-scrollbar-thumb {
+            background-color: #555;
+            border-radius: 4px;
+        }
+        .color-picker-popup::-webkit-scrollbar-thumb:hover {
+            background-color: #888;
+        }
+        .color-picker-popup::-webkit-scrollbar-track {
+            background-color: #2c2c2c;
+        }
+        #send-button {
+            background: none;
+            color: white;
+            border: 1px solid white;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 4px;
+            white-space: nowrap;
+            transition: background 0.3s, color 0.3s;
+        }
+        #send-button:hover {
+            background: white;
+            color: black;
+        }
+        #message::-webkit-scrollbar {
+            width: 8px;
+        }
+        #message::-webkit-scrollbar-thumb {
+            background-color: #555;
+            border-radius: 4px;
+        }
+        #message::-webkit-scrollbar-thumb:hover {
+            background-color: #888;
+        }
+        #message::-webkit-scrollbar-track {
+            background-color: black;
+        }
+        .message {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            background: #1e1e1e;
+            transition: background 0.3s, border-left 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .message.highlighted {
+            background: #333333;
+            border-left: 4px solid #ff4500;
+        }
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: #aaaaaa;
+        }
+        .message-header .nickname {
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .message-header .nickname:hover {
+            color: #00ffff;
+        }
+        .message-content {
+            font-size: 14px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+        #new-messages-indicator {
+            display: none;
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+            background: #ff9800;
+            color: black;
+            padding: 5px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            z-index: 1000;
+            transition: background 0.3s, color 0.3s;
+        }
+        #new-messages-indicator:hover {
+            background: #e68900;
+        }
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                align-items: center;
+                padding: 10px;
+            }
+            header a {
+                margin: 5px 0;
+            }
+            .nickname-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 5px;
+            }
+            .nickname-container input {
+                width: 80%;
+            }
+            #message-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            #send-button {
+                width: 100%;
+            }
+            #chat-box {
+                width: 100%;
+            }
+            .color-picker-popup,
+            .ascii-selector-popup {
+                left: auto;
+                right: 0;
+            }
+        }
+        .buybot-message {
+            background: #004d00;
+            border-left: 4px solid #00ff00;
+        }
+        .message-content a {
+            color: #00ffff;
+            text-decoration: underline;
+        }
+        .message-content a:hover {
+            color: #ff9800;
+        }
+        .hide-buys-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .hide-buys-container label {
+            font-size: 14px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .hide-buys-container input[type="checkbox"] {
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+    </style>
+    <script src="js/socket.io.js"></script>
+</head>
+<body>
+    <header>
+        <a href="https://ai-asciiverse.xyz/">⮐ Back</a>
+    </header>
+    <div class="container">
+        <div class="nickname-container" id="nickname-container">
+            <div class="nickname-group">
+                <span id="current-nickname">Nickname: None</span>
+                <input type="text" id="nickname-input" placeholder="Enter your nickname" maxlength="20">
+                <button id="nickname-button" onclick="toggleNicknameEdit()">Edit</button>
+            </div>
+            <div class="hide-buys-container">
+                <input type="checkbox" id="toggle-buybot" onchange="toggleBuyBotVisibility()">
+                <label for="toggle-buybot" id="hide-buys-label">Hide Buys</label>
+            </div>
+        </div>
+        <div id="chat-box"></div>
+        <div id="new-messages-indicator">
+            New Messages (<span id="new-messages-count">1</span>)
+        </div>
+        <form id="message-form" onsubmit="sendMessage(event)">
+            <div class="input-container">
+                <textarea id="message" placeholder="Enter message (max 9192 characters)" maxlength="9192"></textarea>
+                <div class="message-form-buttons">
+                    <button type="button" id="color-picker-button" class="icon-button" title="Choose Text Color" aria-label="Choose Text Color"></button>
+                    <button type="button" id="ascii-selector-button" class="icon-button" title="Insert ASCII Art" aria-label="Insert ASCII Art">@</button>
+                </div>
+                <div id="color-picker-popup" class="color-picker-popup"></div>
+                <div id="ascii-selector-popup" class="ascii-selector-popup">
+                    <div class="ascii-item">( •͡˘ _•͡˘)ノð</div>
+                    <div class="ascii-item">( ˘ ³˘)ノ°ﾟº❍｡</div>
+                    <div class="ascii-item">(= ФェФ=)</div>
+                    <div class="ascii-item">( ͡° ᴥ ͡°)</div>
+                    <div class="ascii-item">ԅ(≖‿≖ԅ)</div>
+                    <div class="ascii-item">ƪ(ړײ)‎ƪ​​</div>
+                    <div class="ascii-item">( ✜︵✜ )</div>
+                    <div class="ascii-item">(╥﹏╥)</div>
+                    <div class="ascii-item">(｡◕‿‿◕｡)</div>
+                    <div class="ascii-item">(ㆆ _ ㆆ)</div>
+                    <div class="ascii-item">ʕっ•ᴥ•ʔっ</div>
+                    <div class="ascii-item">(˵ ͡° ͜ʖ ͡°˵)</div>
+                    <div class="ascii-item">( •͡˘ _•͡˘)ノð</div>
+                    <div class="ascii-item">(－‸ლ)</div>
+                    <div class="ascii-item">─=≡Σ((( つ◕ل͜◕)つ</div>
+                    <div class="ascii-item">༼ つ ◕_◕ ༽つ</div>
+                    <div class="ascii-item">( ͡°( ͡° ͜ʖ( ͡° ͜ʖ ͡°)ʖ ͡°) ͡°)</div>
+                </div>
+            </div>
+            <button type="submit" id="send-button">Send</button>
+        </form>
+    </div>
+
+    <script>
+        const MAX_MESSAGE_LENGTH = 9192;
+        let lastMessageId = 0;
+        let currentNickname = null;
+        const nicknameColors = {};
+        const colorPalette = [
+            '#ffffff',
+            '#e57373',
+            '#81c784',
+            '#64b5f6',
+            '#ffd54f',
+            '#ba68c8',
+            '#4dd0e1',
+            '#ffb74d',
+            '#90a4ae'
+        ];
+        let colorIndex = 1;
+        let selectedColor = '#ffffff';
+
+        const socket = io();
+        let isInitialLoad = true;
+        let hideBuys = false;
+
+        window.onload = () => {
+            const storedNickname = localStorage.getItem('nickname');
+            if (storedNickname) {
+                currentNickname = storedNickname;
+                assignColor(currentNickname);
+                updateNicknameUI(currentNickname);
+                socket.emit('set nickname', currentNickname, (response) => {
+                    if (response.success) {
+                        console.log('Nickname set successfully.');
+                    } else {
+                        alert(response.message);
+                        localStorage.removeItem('nickname');
+                        currentNickname = null;
+                        updateNicknameUI(null);
+                    }
+                });
+            }
+            const storedColor = localStorage.getItem('selectedColor');
+            if (storedColor && colorPalette.includes(storedColor)) {
+                selectedColor = storedColor;
+                document.getElementById("color-picker-button").style.backgroundColor = selectedColor;
+            }
+            loadMessages();
+            initializeColorPicker();
+            initializeASCIIPicker();
+        };
+
+        function handleNicknameSave() {
+            const nicknameInput = document.getElementById("nickname-input").value.trim();
+            if (!nicknameInput) {
+                alert("Nickname cannot be blank!");
+                return;
+            }
+
+            if (nicknameInput.length > 20) {
+                alert("Nickname cannot exceed 20 characters!");
+                return;
+            }
+
+            if (nicknameInput.toLowerCase() === 'buybot') {
+                alert("The nickname 'BuyBot' is reserved. Please choose another one.");
+                return;
+            }
+
+            socket.emit('set nickname', nicknameInput, (response) => {
+                if (response.success) {
+                    localStorage.setItem('nickname', nicknameInput);
+                    currentNickname = nicknameInput;
+                    if (!nicknameColors[currentNickname]) {
+                        assignColor(currentNickname);
+                    }
+                    updateNicknameUI(currentNickname);
+                    toggleNicknameEdit(false);
+                } else {
+                    alert(response.message);
+                }
+            });
+        }
+
+        function toggleNicknameEdit(forceClose = null) {
+            const nicknameContainer = document.getElementById("nickname-container");
+            const nicknameGroup = document.querySelector(".nickname-group");
+            const nicknameSpan = document.getElementById("current-nickname");
+            const nicknameInput = document.getElementById("nickname-input");
+            const nicknameButton = document.getElementById("nickname-button");
+
+            if (forceClose === false || nicknameContainer.classList.contains("editing")) {
+                nicknameContainer.classList.remove("editing");
+                nicknameSpan.style.display = "inline";
+                nicknameInput.style.display = "none";
+                nicknameButton.textContent = "Edit";
+                nicknameButton.onclick = () => toggleNicknameEdit();
+            } else {
+                nicknameContainer.classList.add("editing");
+                nicknameSpan.style.display = "none";
+                nicknameInput.style.display = "block";
+                nicknameInput.value = currentNickname || "";
+                nicknameButton.textContent = "Save";
+                nicknameButton.onclick = handleNicknameSave;
+                nicknameInput.focus();
+            }
+        }
+
+        function assignColor(nickname) {
+            if (nicknameColors[nickname]) return;
+            nicknameColors[nickname] = colorPalette[colorIndex % colorPalette.length];
+            colorIndex++;
+        }
+
+        function updateNicknameUI(nickname) {
+            const currentNicknameSpan = document.getElementById("current-nickname");
+            const nicknameInput = document.getElementById("nickname-input");
+            const nicknameButton = document.getElementById("nickname-button");
+
+            if (nickname) {
+                currentNicknameSpan.textContent = `Nickname: ${nickname}`;
+                currentNicknameSpan.style.color = nicknameColors[nickname];
+            } else {
+                currentNicknameSpan.textContent = "Nickname: None";
+                currentNicknameSpan.style.color = "#ff9800";
+            }
+        }
+
+        function loadMessages() {
+            fetch("/api/messages")
+                .then(res => res.json())
+                .then(messages => {
+                    const chatBox = document.getElementById("chat-box");
+                    chatBox.innerHTML = "";
+                    const nickname = currentNickname;
+
+                    messages.forEach(msg => {
+                        appendMessage(msg, false);
+                        lastMessageId = msg.id;
+                    });
+
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                    isInitialLoad = false;
+                });
+        }
+
+        let newMessagesCount = 0;
+
+        function appendMessage(msg, isOwnMessage) {
+            if (hideBuys && msg.nickname === "BuyBot") {
+                return;
+            }
+
+            const chatBox = document.getElementById("chat-box");
+            const nickname = currentNickname;
+
+            if (msg.nickname && !nicknameColors[msg.nickname]) {
+                assignColor(msg.nickname);
+            }
+
+            const isTagged = nickname && msg.content.includes(`@${nickname}`);
+
+            const messageDiv = document.createElement("div");
+            messageDiv.classList.add("message");
+
+            if (msg.nickname === "BuyBot") {
+                messageDiv.classList.add("buybot-message");
+            }
+
+            if (isTagged) {
+                messageDiv.classList.add("highlighted");
+            }
+
+            const headerDiv = document.createElement("div");
+            headerDiv.classList.add("message-header");
+
+            const nicknameSpan = document.createElement("span");
+            nicknameSpan.classList.add("nickname");
+            nicknameSpan.textContent = msg.nickname;
+            nicknameSpan.style.color = nicknameColors[msg.nickname] || 'white';
+            nicknameSpan.onclick = () => tagUser(msg.nickname);
+
+            const timestampSpan = document.createElement("span");
+            timestampSpan.classList.add("timestamp");
+            timestampSpan.textContent = formatTimestamp(msg.timestamp);
+
+            headerDiv.appendChild(nicknameSpan);
+            headerDiv.appendChild(timestampSpan);
+
+            const contentDiv = document.createElement("div");
+            contentDiv.classList.add("message-content");
+
+            if (msg.nickname === "BuyBot") {
+                contentDiv.innerHTML = msg.content;
+            } else {
+                contentDiv.innerHTML = highlightTag(msg.content, nickname);
+            }
+
+            contentDiv.style.color = msg.color || 'white';
+
+            messageDiv.appendChild(headerDiv);
+            messageDiv.appendChild(contentDiv);
+
+            chatBox.appendChild(messageDiv);
+
+            if (isOwnMessage) {
+                chatBox.scrollTo({
+                    top: chatBox.scrollHeight,
+                    behavior: 'smooth'
+                });
+            } else {
+                if (isUserAtBottom()) {
+                    chatBox.scrollTo({
+                        top: chatBox.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                } else {
+                    if (!isInitialLoad) {
+                        newMessagesCount++;
+                        updateNewMessagesIndicator();
+                    }
+                }
+            }
+        }
+
+        function formatTimestamp(timestamp) {
+            const date = new Date(timestamp);
+            const options = {
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true
+            };
+            return date.toLocaleTimeString([], options);
+        }
+
+        function highlightTag(content, nickname) {
+            if (!nickname) return sanitize(content).replace(/\n/g, '<br>');
+            const tag = `@${nickname}`;
+            const highlightedTag = `<span style="font-weight: bold; color: #ff4500;">${tag}</span>`;
+            const regex = new RegExp(`@${nickname}`, 'g');
+            return sanitize(content).replace(regex, highlightedTag).replace(/\n/g, '<br>');
+        }
+
+        function tagUser(nickname) {
+            const messageInput = document.getElementById("message");
+            const currentValue = messageInput.value.trim();
+
+            if (!currentValue.includes(`@${nickname}`)) {
+                messageInput.value += `${currentValue ? " " : ""}@${nickname} `;
+            }
+            messageInput.focus();
+        }
+
+        function sendMessage(event) {
+            event.preventDefault();
+            const messageInput = document.getElementById("message");
+            const message = messageInput.value.trim();
+
+            if (!currentNickname) {
+                alert("Please set a nickname before sending messages.");
+                return;
+            }
+
+            if (!message) {
+                alert("Message cannot be blank!");
+                return;
+            }
+            if (message.length > MAX_MESSAGE_LENGTH) {
+                alert(`Message cannot exceed ${MAX_MESSAGE_LENGTH} characters!`);
+                return;
+            }
+
+            socket.emit('send message', {
+                content: message,
+                color: selectedColor
+            });
+
+            const msgObject = {
+                id: lastMessageId + 1,
+                nickname: currentNickname,
+                content: message,
+                timestamp: new Date().toISOString(),
+                color: selectedColor
+            };
+            appendMessage(msgObject, true);
+            lastMessageId++;
+            messageInput.value = "";
+        }
+
+        socket.on('new message', (msg) => {
+            if (msg.nickname === currentNickname && msg.color === selectedColor) {
+                return;
+            }
+            appendMessage(msg, false);
+            lastMessageId = msg.id;
+        });
+
+        socket.on('error', (errorMessage) => {
+            alert(errorMessage);
+        });
+
+        socket.on('nickname assigned', (assignedNickname) => {
+            if (assignedNickname) {
+                currentNickname = assignedNickname;
+                assignColor(currentNickname);
+                updateNicknameUI(currentNickname);
+                localStorage.setItem('nickname', assignedNickname);
+            }
+        });
+
+        function isUserAtBottom() {
+            const chatBox = document.getElementById("chat-box");
+            return chatBox.scrollHeight - chatBox.clientHeight <= chatBox.scrollTop + 50;
+        }
+
+        document.getElementById("message").addEventListener("keydown", function(event) {
+            if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage(event);
+            }
+        });
+
+        function sanitize(str) {
+            const temp = document.createElement('div');
+            temp.textContent = str;
+            return temp.innerHTML;
+        }
+
+        function updateNewMessagesIndicator() {
+            const indicator = document.getElementById("new-messages-indicator");
+            const countSpan = document.getElementById("new-messages-count");
+            countSpan.textContent = newMessagesCount;
+            indicator.style.display = 'block';
+        }
+
+        document.getElementById("new-messages-indicator").addEventListener("click", () => {
+            const chatBox = document.getElementById("chat-box");
+            chatBox.scrollTo({
+                top: chatBox.scrollHeight,
+                behavior: 'smooth'
+            });
+            newMessagesCount = 0;
+            document.getElementById("new-messages-indicator").style.display = 'none';
+        });
+
+        function initializeColorPicker() {
+            const colorPickerButton = document.getElementById("color-picker-button");
+            const colorPickerPopup = document.getElementById("color-picker-popup");
+            const asciiSelectorPopup = document.getElementById("ascii-selector-popup");
+
+            if (colorPickerPopup.childElementCount === 0) {
+                colorPalette.forEach(color => {
+                    const colorDiv = document.createElement("div");
+                    colorDiv.classList.add("color-square");
+                    colorDiv.style.backgroundColor = color;
+                    colorDiv.addEventListener("click", () => {
+                        selectedColor = color;
+                        colorPickerButton.style.backgroundColor = color;
+                        localStorage.setItem('selectedColor', color);
+                        colorPickerPopup.style.display = 'none';
+                        colorPickerPopup.style.visibility = 'hidden';
+                    });
+                    colorPickerPopup.appendChild(colorDiv);
+                });
+            }
+
+            colorPickerButton.addEventListener("click", (event) => {
+                event.stopPropagation();
+                if (asciiSelectorPopup.style.display === 'block') {
+                    asciiSelectorPopup.style.display = 'none';
+                }
+                if (colorPickerPopup.style.display === 'grid') {
+                    colorPickerPopup.style.display = 'none';
+                    colorPickerPopup.style.visibility = 'hidden';
+                } else {
+                    colorPickerPopup.style.display = 'grid';
+                    colorPickerPopup.style.visibility = 'visible';
+                }
+            });
+
+            document.addEventListener("click", (event) => {
+                if (!colorPickerPopup.contains(event.target) && event.target !== colorPickerButton) {
+                    colorPickerPopup.style.display = 'none';
+                    colorPickerPopup.style.visibility = 'hidden';
+                }
+            });
+
+            colorPickerButton.style.backgroundColor = selectedColor;
+        }
+
+        function initializeASCIIPicker() {
+            const asciiSelectorButton = document.getElementById("ascii-selector-button");
+            const asciiSelectorPopup = document.getElementById("ascii-selector-popup");
+            const colorPickerPopup = document.getElementById("color-picker-popup");
+            const asciiItems = asciiSelectorPopup.getElementsByClassName("ascii-item");
+            const messageInput = document.getElementById("message");
+
+            Array.from(asciiItems).forEach(item => {
+                item.addEventListener("click", () => {
+                    messageInput.value += item.textContent;
+                    messageInput.focus();
+                    asciiSelectorPopup.style.display = 'none';
+                });
+            });
+
+            asciiSelectorButton.addEventListener("click", (event) => {
+                event.stopPropagation();
+                if (colorPickerPopup.style.display === 'grid') {
+                    colorPickerPopup.style.display = 'none';
+                    colorPickerPopup.style.visibility = 'hidden';
+                }
+                if (asciiSelectorPopup.style.display === 'block') {
+                    asciiSelectorPopup.style.display = 'none';
+                } else {
+                    asciiSelectorPopup.style.display = 'block';
+                }
+            });
+
+            document.addEventListener("click", (event) => {
+                if (!asciiSelectorPopup.contains(event.target) && event.target !== asciiSelectorButton) {
+                    asciiSelectorPopup.style.display = 'none';
+                }
+            });
+        }
+
+        function toggleBuyBotVisibility() {
+            hideBuys = document.getElementById("toggle-buybot").checked;
+            const label = document.getElementById("hide-buys-label");
+            label.textContent = hideBuys ? "Show Buys" : "Hide Buys";
+
+            const chatBox = document.getElementById("chat-box");
+            const messages = chatBox.getElementsByClassName("message");
+
+            for (let msg of messages) {
+                if (msg.classList.contains("buybot-message")) {
+                    msg.style.display = hideBuys ? "none" : "flex";
+                }
+            }
+        }
+    </script>
+
+
+</body></html>

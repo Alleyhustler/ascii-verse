@@ -1,0 +1,837 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCII NAI</title>
+	
+	 <!--
+	
+	 NAI - Not AI to ASCII Conventer
+	 
+	 let's make all the world to ASCII!
+	
+	 -->
+	
+	 <!--
+	 
+	 ───── ─▄▄─▄▄─ ─────────────
+	 █▀▀▀█ ████░░█ █▀█▀█▀▀▀█▀█▀█
+	 ██─██ ▀███░█▀ █▄─▄█─█─█─█─█
+	 █▄▄▄█ ──▀█▀── ██▄██▄▄▄█▄▄▄█
+	 
+	 -->
+	
+	 <!--
+	
+	 gm stranger! wanna some leak? our new project
+	 ascii.fun will be released on [REDACTED]!
+	
+	 -->
+	
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <style>
+		
+        body {
+            background: black;
+            color: white;
+            font-family: monospace;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        header {
+            background: black;
+            border-bottom: 2px solid white;
+            padding: 10px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        header a {
+            text-decoration: none;
+            color: white;
+            background: none;
+            border: 1px solid white;
+            padding: 5px 15px;
+            margin: 0;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 4px;
+            transition: background 0.3s, color 0.3s;
+        }
+        header a:hover {
+            background: white;
+            color: black;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: calc(100vh - 60px);
+        }
+        .upload-area {
+            width: 80%;
+            max-width: 400px;
+            height: 50px;
+            border: 2px dashed white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            text-align: center;
+            transition: height 0.3s ease, margin 0.3s ease;
+        }
+        .upload-area.hidden {
+            height: 50px;
+            margin-bottom: 5px;
+        }
+        .upload-area:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .preview-area {
+            margin-bottom: 30px;
+            width: auto;
+            max-width: 80%;
+            max-height: 600px;
+            margin: 0 auto;
+            border: 1px solid white;
+            padding: 10px;
+            font-family: monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            user-select: none;
+            transform-origin: center;
+            transition: transform 0.2s ease-in-out;
+        }
+        .preview-area p,
+        .preview-area pre {
+            margin: 0;
+        }
+        .preview-area::-webkit-scrollbar {
+            display: none;
+        }
+        .settings {
+            width: 80%;
+            max-width: 400px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .settings-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .settings-row label {
+            margin-right: 15px;
+            white-space: nowrap;
+        }
+        .settings label {
+            margin-right: 15px;
+            white-space: nowrap;
+        }
+        .settings input[type="checkbox"] {
+            margin-left: 5px;
+        }
+        .settings input[type="range"] {
+            flex-grow: 1;
+            margin-left: 10px;
+        }
+        .settings input[type="number"] {
+            width: 50px;
+            margin-left: 10px;
+        }
+        .ascii-styles {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .ascii-styles label {
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .ascii-styles input[type="radio"] {
+            margin-right: 10px;
+        }
+        #tip-container {
+            position: relative;
+            display: inline-block;
+            margin-left: 15px;
+        }
+        .tip-button {
+            display: inline-block;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            border: 1px solid white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .tip-button:hover {
+            background-color: white;
+            color: black;
+        }
+        .tooltip {
+            display: none;
+            position: absolute;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            background-color: black;
+            color: white;
+            padding: 10px;
+            border: 1px solid white;
+            width: 200px;
+            font-size: 12px;
+            text-align: left;
+            z-index: 10;
+        }
+        #tip-container:hover .tooltip {
+            display: block;
+        }
+        .button-group {
+            display: none;
+            gap: 10px;
+        }
+        button {
+            background: none;
+            color: white;
+            border: 1px solid white;
+            padding: 5px 15px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background: white;
+            color: black;
+        }
+        input[type="range"] {
+            width: 200px;
+            appearance: none;
+            height: 10px;
+            background: white;
+            outline: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border: 2px solid black;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: white;
+            border: 2px solid black;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+		
+		.mobile-view {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 90vh;
+        }
+		
+		.pc-view {
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+		
+        @media screen and (max-width: 768px) {
+            .pc-view {
+                display: none;
+            }
+
+            .mobile-view {
+                display: flex;
+            }
+        }
+		
+		
+    </style>
+</head>
+<body>
+    <header>
+        <a href="https://ai-asciiverse.xyz/">⮐ Back</a>
+    </header>
+	
+	<div class="pc-view">
+		<div class="container">
+			<div class="upload-area" id="uploadArea">
+				Drag and drop file here, or click to upload.
+			</div>
+			<div class="preview-area" id="previewArea" style="font-size: 12px;">
+				<p>No file uploaded yet.</p>
+			</div>
+			<div class="settings">
+				<div class="settings-row">
+					<label>
+						Output Width:
+						<input type="range" id="outputWidthSlider" min="60" max="240" value="100">
+						<span id="outputWidthValue">100</span>
+					</label>
+					<div id="tip-container">
+						<span class="tip-button">?</span>
+						<div class="tooltip">
+							<strong>How to use?</strong>
+							<p>1. Upload an image/gif file.<br>
+							   2. Adjust the output width and settings.<br>
+							   3. Select an ASCII style.<br>
+							   4. Save as PNG/GIF or copy to clipboard.</p>
+						</div>
+					</div>
+				</div>
+				<div class="settings-row">
+					<label><input type="checkbox" id="useColor"> Use Color</label>
+					<label><input type="checkbox" id="invertColors"> Invert Colors</label>
+					<label><input type="checkbox" id="invertContrast"> Invert Contrast</label>
+					<div class="ascii-styles">
+						<label><input type="radio" name="asciiStyle" value="@%#*+=-:. " checked=""> Default</label>
+						<label><input type="radio" name="asciiStyle" value="█▓▒░ "> Block Mode</label>
+						<label><input type="radio" name="asciiStyle" value="#$@&amp;*+=-:. "> Sharp Mode</label>
+					</div>
+				</div>
+			</div>
+			<div class="button-group">
+				<button id="saveAsPng">Save as ASCII PNG</button>
+				<button id="saveAsGif" style="display: none;">Save as ASCII GIF</button>
+				<button id="copyToClipboard">Copy to Clipboard</button>
+			</div>
+		</div>
+	</div>
+	
+	
+	<div class="mobile-view">
+        <pre>�&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;� ⢸
+�&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;� ⢸
+�&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;�⣄⣸⡀
+�&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;�⡩�&nbsp;�⣿⣿⣿⣒⡢
+�&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;�⢣�&nbsp;�
+�&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;�⣰⣆
+�&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;�⢀⣀⣾⣇⣼⡄
+�&nbsp;��&nbsp;��&nbsp;��&nbsp;�⢿�&nbsp;�⢶⣤⣴⣶⣿⣿⡿�&nbsp;��&nbsp;�⣝⢷⡀
+�&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;�⢿⣿⡟�&nbsp;��&nbsp;��&nbsp;�⢿⡇�&nbsp;��&nbsp;��&nbsp;�⣸⣧⣒⣒⡒�&nbsp;�
+�&nbsp;��&nbsp;��&nbsp;��&nbsp;�⢀⣈⣿⣧⡀�&nbsp;��&nbsp;�⣸⣿⣶⣶⣾⣿⣿�&nbsp;��&nbsp;�⣘�&nbsp;�
+�&nbsp;��&nbsp;��&nbsp;�⢊�&nbsp;�⢒⡺⣿⣿⣶⣾⣿⣿⣿⣿⣿⡿�&nbsp;�
+�&nbsp;��&nbsp;��&nbsp;�⢀�&nbsp;��&nbsp;��&nbsp;��&nbsp;�⢻⣿⣿⣿⣿⡿�&nbsp;��&nbsp;��&nbsp;�
+�&nbsp;��&nbsp;��&nbsp;�⣿⡇�&nbsp;��&nbsp;⣶⣿⣿⣷⡄
+�&nbsp;��&nbsp;��&nbsp;�⣿⣧�&nbsp;�⣿⣿⣿⣿⣿⣧�&nbsp;��&nbsp;��&nbsp;�
+�&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;��&nbsp;�⣿⣿⡿⣿⡿�&nbsp;��&nbsp;�
+		</pre>
+		<p>Nothing here for now...</p>
+		<p>Mobile support will be added soon!</p>
+    </div>
+	
+<script src="js/omggif.js"></script>
+<script src="js/gif.js"></script>
+<script src="js/gif.worker.js"></script> 
+<script>
+
+    const uploadArea = document.getElementById('uploadArea');
+    const previewArea = document.getElementById('previewArea');
+    const outputWidthSlider = document.getElementById('outputWidthSlider');
+    const outputWidthValue = document.getElementById('outputWidthValue');
+    const invertColorsCheckbox = document.getElementById('invertColors');
+    const invertContrastCheckbox = document.getElementById('invertContrast');
+    const useColorCheckbox = document.getElementById('useColor');
+    const saveAsPng = document.getElementById('saveAsPng');
+    const copyToClipboard = document.getElementById('copyToClipboard');
+    const saveAsGif = document.getElementById('saveAsGif');
+
+    let asciiResult = '';
+    let isGif = false;
+    let uploadedFileName = '';
+    const MAX_PREVIEW_HEIGHT = 800;
+    let uploadedFile = null; 
+    let zoomLevel = 1;
+
+    function displayFileInfo(fileName) {
+        uploadArea.innerHTML = `<p>Uploaded: <strong>${fileName}</strong></p>`;
+    }
+
+    async function convertToAscii(file) {
+        if (!file) return;
+
+        if (window.asciiAnimationTimeout) {
+            clearTimeout(window.asciiAnimationTimeout);
+            window.asciiAnimationTimeout = null;
+        }
+        isGif = false;
+        asciiResult = '';
+        previewArea.innerHTML = '<p>Processing...</p>';
+
+        uploadedFile = file;
+
+        if (file.size > 10 * 1024 * 1024) {
+            alert('File size exceeds 10MB limit.');
+            return;
+        }
+
+        if (!['image/png', 'image/jpeg', 'image/jpg', 'image/gif'].includes(file.type)) {
+            alert('Only PNG, JPEG, JPG, and GIF files are supported.');
+            return;
+        }
+
+        uploadedFileName = file.name;
+        displayFileInfo(uploadedFileName);
+
+        if (file.type === 'image/gif') {
+            isGif = true;
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const buffer = new Uint8Array(e.target.result);
+                const gifReader = new GifReader(buffer);
+
+                const frames = [];
+
+                for (let i = 0; i < gifReader.numFrames(); i++) {
+                    const width = gifReader.width;
+                    const height = gifReader.height;
+                    const pixels = new Uint8Array(width * height * 4);
+                    gifReader.decodeAndBlitFrameRGBA(i, pixels);
+
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+                    canvas.width = width;
+                    canvas.height = height;
+                    const imageData = ctx.createImageData(width, height);
+                    imageData.data.set(pixels);
+                    ctx.putImageData(imageData, 0, 0);
+
+                    const outputWidth = parseInt(outputWidthSlider.value, 10);
+                    const aspectRatio = canvas.height / canvas.width;
+                    const scaledCanvas = document.createElement('canvas');
+                    scaledCanvas.width = outputWidth;
+                    scaledCanvas.height = Math.round(outputWidth * aspectRatio);
+                    const scaledCtx = scaledCanvas.getContext('2d', { willReadFrequently: true });
+                    scaledCtx.drawImage(canvas, 0, 0, scaledCanvas.width, scaledCanvas.height);
+                    const scaledImageData = scaledCtx.getImageData(0, 0, scaledCanvas.width, scaledCanvas.height);
+
+                    const asciiArt = convertImageDataToAscii(scaledImageData);
+                    const delay = gifReader.frameInfo(i).delay * 10 || 100;
+                    frames.push({ asciiArt, delay: delay });
+                }
+
+                asciiResult = frames;
+                renderAsciiOutput(asciiResult);
+            };
+            reader.readAsArrayBuffer(file);
+        } else {
+            isGif = false;
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+                    const outputWidth = parseInt(outputWidthSlider.value, 10);
+                    const aspectRatio = img.height / img.width;
+                    canvas.width = outputWidth;
+                    canvas.height = Math.round(outputWidth * aspectRatio);
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    asciiResult = convertImageDataToAscii(imageData);
+                    renderAsciiOutput(asciiResult);
+                };
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    const asciiStyleRadios = document.getElementsByName('asciiStyle');
+    function getSelectedAsciiStyle() {
+        for (const radio of asciiStyleRadios) {
+            if (radio.checked) {
+                return radio.value;
+            }
+        }
+        return '@%#*+=-:. ';
+    }
+
+    function convertImageDataToAscii(imageData) {
+        const asciiChars = getSelectedAsciiStyle();
+        const pixels = imageData.data;
+        const width = imageData.width;
+        const height = imageData.height;
+        const charAspectRatio = 2;
+        const adjustedHeight = Math.round(height / charAspectRatio);
+        let ascii = '';
+        for (let y = 0; y < adjustedHeight; y++) {
+            let line = '';
+            for (let x = 0; x < width; x++) {
+                const idx = (Math.floor(y * charAspectRatio) * width + x) * 4;
+                let r = pixels[idx];
+                let g = pixels[idx + 1];
+                let b = pixels[idx + 2];
+
+                if (invertColorsCheckbox.checked) {
+                    r = 255 - r;
+                    g = 255 - g;
+                    b = 255 - b;
+                }
+
+                let brightness = (r + g + b) / 3;
+
+                if (invertContrastCheckbox.checked) {
+                    brightness = 255 - brightness;
+                }
+
+                const charIndex = Math.floor((brightness / 255) * (asciiChars.length - 1));
+                const char = asciiChars[charIndex];
+
+                if (useColorCheckbox.checked) {
+                    line += `<span style="color: rgb(${r}, ${g}, ${b})">${char}</span>`;
+                } else {
+                    line += char;
+                }
+            }
+            ascii += line + '\n';
+        }
+        return trimAsciiArt(ascii);
+    }
+
+    function trimAsciiArt(ascii) {
+        const lines = ascii.split('\n');
+        while (lines.length && !lines[0].trim()) lines.shift();
+        while (lines.length && !lines[lines.length - 1].trim()) lines.pop();
+        return lines.join('\n');
+    }
+
+    function resizeUploadArea() {
+        uploadArea.classList.add('hidden');
+    }
+
+    function focusOnAscii() {
+        const previewAreaHeight = previewArea.offsetHeight;
+        const previewAreaWidth = previewArea.offsetWidth;
+        const contentHeight = previewArea.scrollHeight;
+        const contentWidth = previewArea.scrollWidth;
+        previewArea.scrollTop = (contentHeight - previewAreaHeight) / 2;
+        previewArea.scrollLeft = (contentWidth - previewAreaWidth) / 2;
+    }
+
+    function renderAsciiOutput(ascii) {
+        if (window.asciiAnimationTimeout) {
+            clearTimeout(window.asciiAnimationTimeout);
+            window.asciiAnimationTimeout = null;
+        }
+
+		if (isGif) {
+			const frames = ascii;
+			let currentFrame = 0;
+			const totalFrames = frames.length;
+			let lastFrameTime = performance.now();
+
+			function displayFrame() {
+				const now = performance.now();
+				const frame = frames[currentFrame];
+				const delay = frame.delay > 0 ? frame.delay : 100;
+
+				if (now - lastFrameTime >= delay) {
+					previewArea.innerHTML = `<pre>${frame.asciiArt}</pre>`;
+					currentFrame = (currentFrame + 1) % totalFrames;
+					lastFrameTime = now;
+				}
+
+				window.asciiAnimationFrame = requestAnimationFrame(displayFrame);
+			}
+
+			displayFrame();
+
+			resizeUploadArea();
+			focusOnAscii();
+
+			document.querySelector('.button-group').style.display = 'flex';
+
+			saveAsPng.style.display = 'none';
+			copyToClipboard.style.display = 'none';
+			saveAsGif.style.display = 'inline-block';
+		} else {
+            const lines = ascii.split('\n');
+            const lineHeight = 12;
+            let fontSize = lineHeight;
+            if (lines.length * lineHeight > MAX_PREVIEW_HEIGHT) {
+                fontSize = Math.floor(MAX_PREVIEW_HEIGHT / lines.length);
+            }
+            previewArea.style.height = 'auto';
+            previewArea.style.fontSize = `${fontSize}px`;
+            previewArea.innerHTML = `<pre>${ascii}</pre>`;
+            if (lines.length * fontSize > previewArea.offsetHeight) {
+                previewArea.style.marginBottom = '50px';
+            } else {
+                previewArea.style.marginBottom = '30px';
+            }
+            resizeUploadArea();
+            focusOnAscii();
+            document.querySelector('.button-group').style.display = 'flex';
+
+            saveAsPng.style.display = 'inline-block';
+            copyToClipboard.style.display = 'inline-block';
+            saveAsGif.style.display = 'none';
+        }
+    }
+
+    saveAsPng.addEventListener('click', () => {
+        if (!asciiResult || isGif) {
+            alert('No ASCII art to save!');
+            return;
+        }
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        const lines = asciiResult.split('\n');
+        const fontSize = 12;
+        const lineHeight = fontSize * 1.2;
+        const fontFamily = 'monospace';
+        ctx.font = `${fontSize}px ${fontFamily}`;
+
+        const actualWidth = Math.max(...lines.map(line => {
+            let width = 0;
+            const charRegex = /<span style="color: rgb\((\d+), (\d+), (\d+)\)">(.*?)<\/span>|(.)/g;
+            let match;
+            while ((match = charRegex.exec(line)) !== null) {
+                const char = match[4] || match[5];
+                width += ctx.measureText(char).width;
+            }
+            return width;
+        }));
+        const actualHeight = lines.length * lineHeight;
+        canvas.width = actualWidth;
+        canvas.height = actualHeight;
+        ctx.fillStyle = 'black';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.font = `${fontSize}px ${fontFamily}`;
+        let y = fontSize;
+        lines.forEach(line => {
+            let x = 0;
+            const charRegex = /<span style="color: rgb\((\d+), (\d+), (\d+)\)">(.*?)<\/span>|(.)/g;
+            let match;
+            while ((match = charRegex.exec(line)) !== null) {
+                if (match[1]) {
+                    const [r, g, b] = [parseInt(match[1]), parseInt(match[2]), parseInt(match[3])];
+                    ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+                    for (const char of match[4]) {
+                        ctx.fillText(char, x, y);
+                        x += ctx.measureText(char).width;
+                    }
+                } else if (match[5]) {
+                    ctx.fillStyle = 'white';
+                    ctx.fillText(match[5], x, y);
+                    x += ctx.measureText(match[5]).width;
+                }
+            }
+            y += lineHeight;
+        });
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL('image/png');
+        link.download = 'ascii-art.png';
+        link.click();
+    });
+
+    copyToClipboard.addEventListener('click', () => {
+        if (!asciiResult || isGif) {
+            alert('No ASCII art to copy!');
+            return;
+        }
+        const textArea = document.createElement('textarea');
+        textArea.value = asciiResult.replace(/<[^>]*>/g, '');
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            alert('ASCII art copied to clipboard!');
+        } catch (err) {
+            alert('Failed to copy ASCII art.');
+        }
+        document.body.removeChild(textArea);
+    });
+
+    saveAsGif.addEventListener('click', () => {
+        if (!asciiResult || !isGif) {
+            alert('No ASCII GIF to save!');
+            return;
+        }
+        const gif = new GIF({
+            workers: 4,
+            quality: 20,
+            workerScript: 'js/gif.worker.js'
+        });
+
+        const fontSize = 12;
+        const lineHeight = fontSize * 1.2;
+        const fontFamily = 'monospace';
+
+        const firstFrameAscii = asciiResult[0].asciiArt;
+        const lines = firstFrameAscii.split('\n');
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
+        tempCtx.font = `${fontSize}px ${fontFamily}`;
+        const canvasWidth = Math.max(...lines.map(line => tempCtx.measureText(line.replace(/<[^>]*>/g, '')).width));
+        const canvasHeight = lines.length * lineHeight;
+
+        asciiResult.forEach(frame => {
+            const frameCanvas = document.createElement('canvas');
+            frameCanvas.width = canvasWidth;
+            frameCanvas.height = canvasHeight;
+            const frameCtx = frameCanvas.getContext('2d', { willReadFrequently: true });
+            frameCtx.fillStyle = 'black';
+            frameCtx.fillRect(0, 0, frameCanvas.width, frameCanvas.height);
+            frameCtx.font = `${fontSize}px ${fontFamily}`;
+
+            const frameLines = frame.asciiArt.split('\n');
+            let y = fontSize;
+            frameLines.forEach(line => {
+                let x = 0;
+                const charRegex = /<span style="color: rgb\((\d+), (\d+), (\d+)\)">(.*?)<\/span>|(.)/g;
+                let match;
+                while ((match = charRegex.exec(line)) !== null) {
+                    if (match[1]) {
+                        const [r, g, b] = [parseInt(match[1]), parseInt(match[2]), parseInt(match[3])];
+                        frameCtx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+                        for (const char of match[4]) {
+                            frameCtx.fillText(char, x, y);
+                            x += frameCtx.measureText(char).width;
+                        }
+                    } else if (match[5]) {
+                        frameCtx.fillStyle = 'white';
+                        frameCtx.fillText(match[5], x, y);
+                        x += frameCtx.measureText(match[5]).width;
+                    }
+                }
+                y += lineHeight;
+            });
+
+            const delay = frame.delay > 0 ? frame.delay : 100;
+            gif.addFrame(frameCanvas, { delay: delay });
+        });
+
+        gif.on('finished', function(blob) {
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'ascii-art.gif';
+            link.click();
+        });
+
+        gif.render();
+    });
+
+    const settingsElements = [
+        invertColorsCheckbox,
+        invertContrastCheckbox,
+        useColorCheckbox,
+        outputWidthSlider,
+        ...asciiStyleRadios
+    ];
+
+    settingsElements.forEach(element => {
+        element.addEventListener('change', () => {
+            if (uploadedFile) {
+                convertToAscii(uploadedFile);
+            }
+        });
+    });
+
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.style.background = 'rgba(255, 255, 255, 0.1)';
+    });
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.style.background = 'transparent';
+    });
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.style.background = 'transparent';
+        const file = e.dataTransfer.files[0];
+        zoomLevel = 1; 
+        previewArea.style.transform = `scale(${zoomLevel})`;
+        convertToAscii(file);
+    });
+    uploadArea.addEventListener('click', () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/png, image/jpeg, image/jpg, image/gif';
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            zoomLevel = 1;
+            previewArea.style.transform = `scale(${zoomLevel})`;
+            convertToAscii(file);
+        };
+        input.click();
+    });
+    outputWidthSlider.addEventListener('input', () => {
+        outputWidthValue.textContent = outputWidthSlider.value;
+        if (uploadedFile) convertToAscii(uploadedFile);
+    });
+
+    let isDragging = false;
+    let startX, startY, scrollLeft, scrollTop;
+    previewArea.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.pageX - previewArea.offsetLeft;
+        startY = e.pageY - previewArea.offsetTop;
+        scrollLeft = previewArea.scrollLeft;
+        scrollTop = previewArea.scrollTop;
+    });
+    previewArea.addEventListener('mouseleave', () => {
+        isDragging = false;
+    });
+    previewArea.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+    previewArea.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        const x = e.pageX - previewArea.offsetLeft;
+        const y = e.pageY - previewArea.offsetTop;
+        const walkX = (x - startX) * 1;
+        const walkY = (y - startY) * 1;
+        previewArea.scrollLeft = scrollLeft - walkX;
+        previewArea.scrollTop = scrollTop - walkY;
+    });
+
+    function zoomPreview(delta) {
+        zoomLevel += delta;
+        zoomLevel = Math.max(0.5, Math.min(zoomLevel, 3));
+        previewArea.style.transform = `scale(${zoomLevel})`;
+        previewArea.style.transformOrigin = "center";
+    }
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey) {
+            if (e.key === '+') {
+                e.preventDefault();
+                zoomPreview(0.1);
+            } else if (e.key === '-') {
+                e.preventDefault();
+                zoomPreview(-0.1);
+            }
+        }
+    });
+</script>
+
+
+</body></html>
